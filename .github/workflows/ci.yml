@@ -1,61 +1,21 @@
-name: Flutter CI — Android + iOS
+name: bitrisesample
+description: A new Flutter project.
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+publish_to: "none"
 
-jobs:
-  build-android:
-    name: Build Android APK
-    runs-on: ubuntu-latest
+version: 1.0.0+1
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+environment:
+  sdk: ">=2.18.0 <4.0.0"
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
 
-      - name: Install dependencies
-        run: flutter pub get
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
 
-      - name: Build Android APK
-        run: flutter build apk --release
-
-      - name: Upload Android artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Android-APK
-          path: build/app/outputs/flutter-apk/*.apk
-
-  build-ios:
-    name: Build iOS IPA
-    runs-on: macos-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Build iOS (no codesign)
-        run: flutter build ipa --release --no-codesign
-
-      - name: Upload iOS artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: iOS-IPA
-          path: build/ios/ipa/*.ipa
+flutter:
+  uses-material-design: true
