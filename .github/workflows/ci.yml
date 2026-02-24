@@ -11,11 +11,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      # PATCH pubspec.yaml so flutter pub get will work on modern Dart
+      - name: Ensure pubspec uses null-safety SDK (temporary)
+        run: |
+          if [ -f pubspec.yaml ]; then
+            # Replace sdk constraint line
+            sed -i.bak 's/sdk: .*/sdk: ">=2.18.0 <4.0.0"/' pubspec.yaml || true
+            # Bump cupertino_icons to a null-safe version if present
+            sed -i.bak 's/cupertino_icons: .*/cupertino_icons: ^1.0.6/' pubspec.yaml || true
+            echo "Patched pubspec.yaml:"
+            sed -n '1,200p' pubspec.yaml
+          fi
+
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+
       - run: flutter pub get
+
       - run: flutter build apk --release
+
       - uses: actions/upload-artifact@v4
         with:
           name: Android-APK
@@ -25,11 +41,24 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Ensure pubspec uses null-safety SDK (temporary)
+        run: |
+          if [ -f pubspec.yaml ]; then
+            sed -i.bak 's/sdk: .*/sdk: ">=2.18.0 <4.0.0"/' pubspec.yaml || true
+            sed -i.bak 's/cupertino_icons: .*/cupertino_icons: ^1.0.6/' pubspec.yaml || true
+            echo "Patched pubspec.yaml:"
+            sed -n '1,200p' pubspec.yaml
+          fi
+
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+
       - run: flutter pub get
+
       - run: flutter build ipa --release --no-codesign
+
       - uses: actions/upload-artifact@v4
         with:
           name: iOS-IPA
